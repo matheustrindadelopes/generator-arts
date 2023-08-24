@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, orange, yellow);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #canvas {
+            width: 300px;
+            height: 300px;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #shapes {
+            position: absolute;
+        }
+
+        #controls {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 10px;
+            background-color: #8e44ad;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        #generate-art-button {
+            background-color: #3498db;
+        }
+
+        .shape {
+            position: absolute;
+        }
+
+        .circle {
+            clip-path: circle(50%);
+        }
+
+        .square {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        }
+
+        .triangle {
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .rectangle {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 50%, 0% 50%);
+        }
+
+        .oval {
+            clip-path: ellipse(50% 50% at 50% 50%);
+        }
+
+        .diamond {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .heptagon {
+            clip-path: polygon(50% 0%, 86% 25%, 100% 68%, 64% 100%, 36% 100%, 0% 68%, 14% 25%);
+        }
+
+        .octagon {
+            clip-path: polygon(29% 0%, 71% 0%, 100% 29%, 100% 71%, 71% 100%, 29% 100%, 0% 71%, 0% 29%);
+        }
+
+        .nonagon {
+            clip-path: polygon(50% 0%, 81% 17%, 100% 50%, 81% 83%, 50% 100%, 19% 83%, 0% 50%, 19% 17%, 50% 0%);
+        }
+
+        .decagon {
+            clip-path: polygon(50% 0%, 67% 14%, 86% 36%, 95% 64%, 86% 86%, 67% 100%, 50% 100%, 32% 86%, 14% 64%, 5% 36%);
+        }
+
+        .pentagon {
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Geometric Shape Generator</h1>
+    </header>
+    <main>
+        <div id="canvas">
+            <div id="shapes"></div>
+        </div>
+        <div id="controls">
+            <button class="button" id="clear-button">Clear Canvas</button>
+            <button class="button" id="generate-art-button">Generate Shape Generator</button>
+        </div>
+    </main>
+    <script>
+        const canvas = document.getElementById("shapes");
+        const clearButton = document.getElementById("clear-button");
+        const generateArtButton = document.getElementById("generate-art-button");
+
+        clearButton.addEventListener("click", clearCanvas);
+        generateArtButton.addEventListener("click", generateAbstractArt);
+
+        const shapes = ["circle", "square", "triangle", "rectangle", "oval", "diamond", "hexagon", "heptagon", "octagon", "nonagon", "decagon", "pentagon"];
+
+        function generateAbstractArt() {
+            clearCanvas();
+            const numShapes = Math.floor(Math.random() * 10) + 5;
+            const canvasSize = 750; // Tamanho do quadrado
+            const shapeSize = 100; // Tamanho das formas
+
+            const numRows = Math.floor(Math.sqrt(numShapes));
+            const numCols = Math.ceil(numShapes / numRows);
+
+            const rowSpacing = (canvasSize - shapeSize * numRows) / (numRows - 1);
+            const colSpacing = (canvasSize - shapeSize * numCols) / (numCols - 1);
+
+            for (let row = 0; row < numRows; row++) {
+                for (let col = 0; col < numCols; col++) {
+                    const x = col * (colSpacing + shapeSize);
+                    const y = row * (rowSpacing + shapeSize);
+
+                    const color = getRandomColor();
+                    const shapeType = shapes[Math.floor(Math.random() * shapes.length)];
+                    const shape = createShapeElement(x, y, color, shapeSize, shapeType);
+                    canvas.appendChild(shape);
+                }
+            }
+        }
+
+
+
+        function getRandomValue(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+
+        function createShapeElement(x, y, color, size, shapeType) {
+            const shapeElement = document.createElement("div");
+            shapeElement.className = "shape " + shapeType;
+            shapeElement.style.left = x + "px";
+            shapeElement.style.top = y + "px";
+            shapeElement.style.backgroundColor = color;
+            shapeElement.style.width = size + "px";
+            shapeElement.style.height = size + "px";
+            return shapeElement;
+        }
+
+        function clearCanvas() {
+            while (canvas.firstChild) {
+                canvas.removeChild(canvas.firstChild);
+            }
+        }
+
+        function getRandomValue(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function getRandomColor() {
+            const letters = "0123456789ABCDEF";
+            let color = "#";
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function getRandomSize() {
+            return Math.floor(Math.random() * 40) + 20;
+        }
+    </script>
+</body>
+
+</html>
